@@ -13,7 +13,7 @@ class UserController {
     });
   }
 
-  onSubmit(){
+  onSubmit() {
     this.formEl.addEventListener("submit", event => {
       event.preventDefault();
 
@@ -39,18 +39,18 @@ class UserController {
   }
   // onSubmit
 
-  getPhoto(){
+  getPhoto() {
     return new Promise((resolve, reject) => {
       let fileReader = new FileReader();
 
       let elementes = [...this.formEl.elements].filter(item => {
         if (item.name === "photo") {
           return item;
-        } 
+        }
       });
-  
+
       let file = elementes[0].files[0];
-  
+
       fileReader.onload = () => {
         resolve(fileReader.result)
       };
@@ -58,29 +58,29 @@ class UserController {
       fileReader.onerror = (e) => {
         reject(e);
       };
-  
+
       if (file) {
         fileReader.readAsDataURL(file);
-      }else {
+      } else {
         resolve('dist/img/boxed-bg.jpg');
       }
     });
   }
 
-  getValues(){
+  getValues() {
     let user = {};
     let isValid = true;
 
-    [...this.formEl.elements].forEach(function(field, index){
+    [...this.formEl.elements].forEach(function (field, index) {
       if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
         field.parentElement.classList.add('has-error');
         isValid = false;
       }
 
       if (field.name === "gender") {
-          if (field.checked) {
-              user[field.name] = field.value
-          }
+        if (field.checked) {
+          user[field.name] = field.value
+        }
       } else if (field.name == "admin") {
         user[field.name] = field.checked;
       } else {
@@ -93,19 +93,19 @@ class UserController {
     }
 
     return new User(
-        user.name,
-        user.gender,
-        user.birth,
-        user.country,
-        user.email,
-        user.password,
-        user.photo,
-        user.admin
+      user.name,
+      user.gender,
+      user.birth,
+      user.country,
+      user.email,
+      user.password,
+      user.photo,
+      user.admin
     );
   }
   // getValues
 
-  addLine(dataUser){
+  addLine(dataUser) {
 
     let tr = document.createElement('tr');
 
@@ -126,6 +126,17 @@ class UserController {
     tr.querySelector(".btn-edit").addEventListener("click", e => {
       // console.log(JSON.pasrse(tr.dataset.user));
 
+      let json = JSON.parse(tr.dataset.user);
+      let form = document.querySelector("#form-user-update");
+      for (let name in json) {
+        let field = form.querySelector("[name=" + name.replace("_", "") + "]");
+
+        if (field) {
+          if (field.type == 'file') continue;
+          field.value = json[name];
+        }
+      }
+
       this.showPanelUpdate();
     });
 
@@ -143,7 +154,7 @@ class UserController {
     document.querySelector("#box-user-create").style.display = "none";
     document.querySelector("#box-user-update").style.display = "block";
   }
-  
+
   updateCount() {
     let numberUsers = 0;
     let numberAdmin = 0;
@@ -153,7 +164,7 @@ class UserController {
 
       let user = JSON.parse(tr.dataset.user);
 
-      if(user._admin) numberAdmin++;
+      if (user._admin) numberAdmin++;
     });
 
     document.querySelector("#number-users").innerHTML = numberUsers;
